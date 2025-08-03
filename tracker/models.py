@@ -67,16 +67,16 @@ class Teacher(models.Model):
 class Assessment(models.Model):
 
     TESTCHOICES = [
-        ('Quiz'),
-        ('MidTerm'),
-        ('Assignment'),
-        ('Final'),
-        ('Project')
+        ('Quiz', 'Quiz'),
+        ('MidTerm', 'MidTerm'),
+        ('Assignment', 'Assignment'),
+        ('Final', 'Final'),
+        ('Project', 'Project')
     ]
 
     name = models.CharField(max_length=20)
     type = models.CharField(max_length=20, choices=TESTCHOICES)
-    max_score = models.DecimalField(max_digits=5)
+    max_score = models.DecimalField(max_digits=10, decimal_places= 4)
     weight = models.DecimalField(max_digits= 5, decimal_places= 2)
     date = models.DateField(auto_now_add=True)
 
@@ -87,7 +87,7 @@ class Assessment(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields= ['name', 'grade', 'subject'])
+            models.UniqueConstraint(fields= ['name', 'grade', 'subject'], name='unique_assessment')
         ]
 
 
