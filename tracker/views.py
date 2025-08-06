@@ -2,7 +2,7 @@
 # from urllib import request
 from django.views.generic import ListView, CreateView, DeleteView, UpdateView
 
-from .models import Student, Mark
+from .models import Student, Mark, Attendace
 from django.urls import reverse_lazy
 
 
@@ -36,7 +36,7 @@ class StudentDeleteView(DeleteView):
 class MarkListView(ListView):
     model = Mark
     template_name = 'tracker/mark_list.html'
-    context_object_name = 'marks'
+    context_object_name = 'mark'
 
 
 class MarkCreateView(CreateView):
@@ -53,3 +53,12 @@ class MarkUpdateView(UpdateView):
 
 
 
+class AttendaceListView(ListView):
+    model = Attendace
+    temlplate_name = 'tracker/attendace_list.html'
+    context_object_name = 'attendace'
+
+class AttendaceCreateView(CreateView):
+    model = Attendace
+    tempalte_name = 'tracker/attendance_form.html'
+    success_url = reverse_lazy('attendace')
