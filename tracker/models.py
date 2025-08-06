@@ -127,6 +127,8 @@ class Mark(models.Model):
     student = models.ForeignKey(Student, on_delete= models.CASCADE)
     assessment = models.ForeignKey(Assessment, on_delete= models.CASCADE)
 
+    
 
+    
     def __str__(self):
         return str(self.score)
