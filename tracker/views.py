@@ -1,5 +1,6 @@
-# from django.shortcuts import render
-# from urllib import request
+from django.shortcuts import render
+from urllib import request
+from django.db.models import Count, Q
 from django.views.generic import ListView, CreateView, DeleteView, UpdateView
 
 from .models import Student, Mark, Attendace
@@ -62,3 +63,35 @@ class AttendaceCreateView(CreateView):
     model = Attendace
     tempalte_name = 'tracker/attendance_form.html'
     success_url = reverse_lazy('attendace')
+
+
+def attendace_report(request):
+    students = Student.objects.all()
+    report = []
+
+
+    for student in students:
+        total = Attendace.objects.filter(student = student).count()
+        present = Attendace.objects.filter(student=student, status='present').count()
+        absent = Attendace.objects.filter(student=student, status= 'absent').count()
+        excused = Attendace.objects.filter(student=student, status= 'excused').count()
+        late = Attendace.objects.filter(student=student, status= 'late').count()
+
+        percentage = (present / total) * 100 if total > 0 else 0
+
+        report.append({
+            'student' : student,
+            'total' : total,
+            'present' : present,
+            'absent' : absent,
+            'excused' : excused,
+            'late' : late,
+            'percentage' : round(percentage, 2)
+        })
+
+    context = {
+        'report' : report
+    }
+
+
+    return render(request, 'tracker/attendace_report.html', context)
