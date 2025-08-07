@@ -1,0 +1,291 @@
+{% extends 'tracker/base.html' %}
+
+{% block title %}Attendance Report - Student Tracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>Attendance Report
+                </h4>
+                <div>
+                    <a href="{% url 'attendace' %}" class="btn btn-outline-primary me-2">
+                        <i class="fas fa-list me-1"></i>View All Records
+                    </a>
+                    <a href="{% url 'edit-attendace' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>Add Record
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if report %}
+                    <!-- Summary Statistics -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body text-center">
+                                    <h3>{{ report|length }}</h3>
+                                    <small>Total Students</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body text-center">
+                                    <h3>
+                                        {% with total_present=0 %}
+                                            {% for item in report %}
+                                                {% with total_present=total_present|add:item.present %}{% endwith %}
+                                            {% endfor %}
+                                            {{ total_present }}
+                                        {% endwith %}
+                                    </h3>
+                                    <small>Total Present</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-danger text-white">
+                                <div class="card-body text-center">
+                                    <h3>
+                                        {% with total_absent=0 %}
+                                            {% for item in report %}
+                                                {% with total_absent=total_absent|add:item.absent %}{% endwith %}
+                                            {% endfor %}
+                                            {{ total_absent }}
+                                        {% endwith %}
+                                    </h3>
+                                    <small>Total Absent</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-info text-white">
+                                <div class="card-body text-center">
+                                    <h3>
+                                        {% with total_late=0 %}
+                                            {% for item in report %}
+                                                {% with total_late=total_late|add:item.late %}{% endwith %}
+                                            {% endfor %}
+                                            {{ total_late }}
+                                        {% endwith %}
+                                    </h3>
+                                    <small>Total Late</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Report Table -->
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Grade</th>
+                                    <th>Total Days</th>
+                                    <th>Present</th>
+                                    <th>Absent</th>
+                                    <th>Excused</th>
+                                    <th>Late</th>
+                                    <th>Attendance Rate</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in report %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ item.student.first_name }} {{ item.student.last_name }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ item.student.email }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ item.student.grade.name }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-dark">{{ item.total }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">{{ item.present }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger">{{ item.absent }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">{{ item.excused }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ item.late }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="progress flex-grow-1 me-2" style="height: 20px;">
+                                                <div class="progress-bar 
+                                                    {% if item.percentage >= 90 %}bg-success
+                                                    {% elif item.percentage >= 80 %}bg-info
+                                                    {% elif item.percentage >= 70 %}bg-warning
+                                                    {% else %}bg-danger{% endif %}" 
+                                                     role="progressbar" 
+                                                     style="width: {{ item.percentage }}%"
+                                                     aria-valuenow="{{ item.percentage }}" 
+                                                     aria-valuemin="0" 
+                                                     aria-valuemax="100">
+                                                    {{ item.percentage }}%
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if item.percentage >= 90 %}
+                                            <span class="badge bg-success">Excellent</span>
+                                        {% elif item.percentage >= 80 %}
+                                            <span class="badge bg-info">Good</span>
+                                        {% elif item.percentage >= 70 %}
+                                            <span class="badge bg-warning">Fair</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Poor</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Performance Analysis -->
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-chart-pie me-2"></i>Attendance Distribution
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row text-center">
+                                        <div class="col-6">
+                                            <div class="border-end">
+                                                <h4 class="text-success">
+                                                    {% with excellent_count=0 %}
+                                                        {% for item in report %}
+                                                            {% if item.percentage >= 90 %}
+                                                                {% with excellent_count=excellent_count|add:1 %}{% endwith %}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        {{ excellent_count }}
+                                                    {% endwith %}
+                                                </h4>
+                                                <small class="text-muted">Excellent (≥90%)</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <h4 class="text-info">
+                                                {% with good_count=0 %}
+                                                    {% for item in report %}
+                                                        {% if item.percentage >= 80 and item.percentage < 90 %}
+                                                            {% with good_count=good_count|add:1 %}{% endwith %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    {{ good_count }}
+                                                {% endwith %}
+                                            </h4>
+                                            <small class="text-muted">Good (80-89%)</small>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row text-center">
+                                        <div class="col-6">
+                                            <div class="border-end">
+                                                <h4 class="text-warning">
+                                                    {% with fair_count=0 %}
+                                                        {% for item in report %}
+                                                            {% if item.percentage >= 70 and item.percentage < 80 %}
+                                                                {% with fair_count=fair_count|add:1 %}{% endwith %}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        {{ fair_count }}
+                                                    {% endwith %}
+                                                </h4>
+                                                <small class="text-muted">Fair (70-79%)</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <h4 class="text-danger">
+                                                {% with poor_count=0 %}
+                                                    {% for item in report %}
+                                                        {% if item.percentage < 70 %}
+                                                            {% with poor_count=poor_count|add:1 %}{% endwith %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    {{ poor_count }}
+                                                {% endwith %}
+                                            </h4>
+                                            <small class="text-muted">Poor (<70%)</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>Students Needing Attention
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    {% with low_attendance=0 %}
+                                        {% for item in report %}
+                                            {% if item.percentage < 80 %}
+                                                {% with low_attendance=low_attendance|add:1 %}{% endwith %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if low_attendance > 0 %}
+                                            <div class="alert alert-warning">
+                                                <h6 class="alert-heading">
+                                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                                    {{ low_attendance }} student{{ low_attendance|pluralize }} with attendance below 80%
+                                                </h6>
+                                                <ul class="mb-0">
+                                                    {% for item in report %}
+                                                        {% if item.percentage < 80 %}
+                                                            <li>
+                                                                <strong>{{ item.student.first_name }} {{ item.student.last_name }}</strong> 
+                                                                ({{ item.percentage }}% attendance)
+                                                            </li>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        {% else %}
+                                            <div class="alert alert-success">
+                                                <h6 class="alert-heading">
+                                                    <i class="fas fa-check-circle me-2"></i>
+                                                    All students have good attendance rates!
+                                                </h6>
+                                                <p class="mb-0">No students require immediate attention.</p>
+                                            </div>
+                                        {% endif %}
+                                    {% endwith %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No attendance data available</h5>
+                        <p class="text-muted">Start tracking attendance to generate reports.</p>
+                        <a href="{% url 'edit-attendace' %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Add Attendance Record
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

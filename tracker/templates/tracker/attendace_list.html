@@ -1,0 +1,217 @@
+{% extends 'tracker/base.html' %}
+
+{% block title %}Attendance - Student Tracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-calendar-check me-2"></i>Attendance Records
+                </h4>
+                <a href="{% url 'edit-attendace' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>Add Attendance Record
+                </a>
+            </div>
+            <div class="card-body">
+                {% if attendace %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Subject</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for attendance in attendace %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ attendance.student.first_name }} {{ attendance.student.last_name }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ attendance.student.grade.name }}</small>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <strong>{{ attendance.subject.name }}</strong>
+                                            <br>
+                                            <small class="text-muted">Code: {{ attendance.subject.code }}</small>
+                                        </div>
+                                    </td>
+                                    <td>{{ attendance.date|date:"M d, Y" }}</td>
+                                    <td>
+                                        {% if attendance.status == 'present' %}
+                                            <span class="badge bg-success">Present</span>
+                                        {% elif attendance.status == 'absent' %}
+                                            <span class="badge bg-danger">Absent</span>
+                                        {% elif attendance.status == 'excused' %}
+                                            <span class="badge bg-warning">Excused</span>
+                                        {% elif attendance.status == 'late' %}
+                                            <span class="badge bg-info">Late</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-outline-info btn-action" 
+                                                    title="View Details"
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#attendanceModal{{ attendance.pk }}">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <!-- Modal for attendance details -->
+                                <div class="modal fade" id="attendanceModal{{ attendance.pk }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Attendance Details</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <strong>Student:</strong><br>
+                                                        {{ attendance.student.first_name }} {{ attendance.student.last_name }}
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <strong>Grade:</strong><br>
+                                                        {{ attendance.student.grade.name }}
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <strong>Subject:</strong><br>
+                                                        {{ attendance.subject.name }}
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <strong>Subject Code:</strong><br>
+                                                        {{ attendance.subject.code }}
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <strong>Date:</strong><br>
+                                                        {{ attendance.date|date:"F d, Y" }}
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <strong>Status:</strong><br>
+                                                        {% if attendance.status == 'present' %}
+                                                            <span class="badge bg-success">Present</span>
+                                                        {% elif attendance.status == 'absent' %}
+                                                            <span class="badge bg-danger">Absent</span>
+                                                        {% elif attendance.status == 'excused' %}
+                                                            <span class="badge bg-warning">Excused</span>
+                                                        {% elif attendance.status == 'late' %}
+                                                            <span class="badge bg-info">Late</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <strong>Subject Description:</strong><br>
+                                                        {{ attendance.subject.description|default:"No description available" }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Summary Statistics -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card bg-light">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-chart-pie me-2"></i>Attendance Summary
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row text-center">
+                                        <div class="col-md-3">
+                                            <div class="border-end">
+                                                <h4 class="text-success">{{ attendace|length }}</h4>
+                                                <small class="text-muted">Total Records</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="border-end">
+                                                <h4 class="text-success">
+                                                    {% with present_count=attendace|length %}
+                                                        {% for attendance in attendace %}
+                                                            {% if attendance.status == 'present' %}
+                                                                {% with present_count=present_count|add:1 %}{% endwith %}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        {{ present_count }}
+                                                    {% endwith %}
+                                                </h4>
+                                                <small class="text-muted">Present</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="border-end">
+                                                <h4 class="text-danger">
+                                                    {% with absent_count=0 %}
+                                                        {% for attendance in attendace %}
+                                                            {% if attendance.status == 'absent' %}
+                                                                {% with absent_count=absent_count|add:1 %}{% endwith %}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        {{ absent_count }}
+                                                    {% endwith %}
+                                                </h4>
+                                                <small class="text-muted">Absent</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <h4 class="text-info">
+                                                {% with late_count=0 %}
+                                                    {% for attendance in attendace %}
+                                                        {% if attendance.status == 'late' %}
+                                                            {% with late_count=late_count|add:1 %}{% endwith %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    {{ late_count }}
+                                                {% endwith %}
+                                            </h4>
+                                            <small class="text-muted">Late</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-calendar-check fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No attendance records found</h5>
+                        <p class="text-muted">Get started by adding attendance records for students.</p>
+                        <a href="{% url 'edit-attendace' %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Add Attendance Record
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

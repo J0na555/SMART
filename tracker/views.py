@@ -3,7 +3,7 @@ from urllib import request
 from django.db.models import Count, Q
 from django.views.generic import ListView, CreateView, DeleteView, UpdateView
 
-from .models import Student, Mark, Attendace
+from .models import Student, Mark, Attendace, Grade, Subject, Teacher
 from django.urls import reverse_lazy
 
 
@@ -32,6 +32,43 @@ class StudentDeleteView(DeleteView):
     success_url = reverse_lazy('student-list')
 
 
+class GradeListView(ListView):
+    model = Grade
+    template_name = 'tracker/grade_list'
+    context_object_name = 'grades'
+
+class GradeCreateView(CreateView):
+    model = Grade
+    fields = '__all__'
+    template_name = 'tracker/grade_form.html'
+    success_url = reverse_lazy('grade-list')
+
+
+class SubjectListView(ListView):
+    model = Subject
+    tempalte_name = 'tracker/subject_list.html'
+    context_object_name = 'subjects'
+
+
+class SubjectCreateView(CreateView):
+    model = Subject
+    fields = '__all__'
+    template_name = 'tracker/subject_form.html'
+    success_url = reverse_lazy('subject-list')
+
+class TeacherListView(ListView):
+    model = Teacher
+    template_name = 'tracker/teacher_list.html'
+    context_object_name = 'teachers'
+
+class TeacherCreateView(CreateView):
+    model = Teacher
+    fields = '__all__'
+    template_name = 'tracker/teacher_form'
+    success_url = reverse_lazy('teacher-list')
+
+
+
 
 
 class MarkListView(ListView):
@@ -50,18 +87,20 @@ class MarkCreateView(CreateView):
 class MarkUpdateView(UpdateView):
     model = Mark
     template_name = 'tracker/mark_form.html'
+    fields = '__all__'
     success_url = reverse_lazy('mark-list')
 
 
 
 class AttendaceListView(ListView):
     model = Attendace
-    temlplate_name = 'tracker/attendace_list.html'
+    template_name = 'tracker/attendace_list.html'
     context_object_name = 'attendace'
 
 class AttendaceCreateView(CreateView):
     model = Attendace
-    tempalte_name = 'tracker/attendance_form.html'
+    template_name = 'tracker/attendance_form.html'
+    fields = '__all__'
     success_url = reverse_lazy('attendace')
 
 
