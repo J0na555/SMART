@@ -34,7 +34,7 @@ class StudentDeleteView(DeleteView):
 
 class GradeListView(ListView):
     model = Grade
-    template_name = 'tracker/grade_list'
+    template_name = 'tracker/grade_list.html'
     context_object_name = 'grades'
 
 class GradeCreateView(CreateView):
@@ -43,10 +43,21 @@ class GradeCreateView(CreateView):
     template_name = 'tracker/grade_form.html'
     success_url = reverse_lazy('grade-list')
 
+class GradeUpdateView(UpdateView):
+    model = Grade
+    fields = '__all__'
+    template_name = 'tracker/grade_form.html'
+    success_url = reverse_lazy('grade-list')
+
+class GradeDeleteView(DeleteView):
+    model = Grade
+    template_name = 'tracker/grade_confirm_delete.html'
+    success_url = reverse_lazy('grade-list')
+
 
 class SubjectListView(ListView):
     model = Subject
-    tempalte_name = 'tracker/subject_list.html'
+    template_name = 'tracker/subject_list.html'
     context_object_name = 'subjects'
 
 
@@ -54,6 +65,17 @@ class SubjectCreateView(CreateView):
     model = Subject
     fields = '__all__'
     template_name = 'tracker/subject_form.html'
+    success_url = reverse_lazy('subject-list')
+
+class SubjectUpdateView(UpdateView):
+    model = Subject
+    fields = '__all__'
+    template_name = 'tracker/subject_form.html'
+    success_url = reverse_lazy('subject-list')
+
+class SubjectDeleteView(DeleteView):
+    model = Subject
+    template_name = 'tracker/subject_confirm_delete.html'
     success_url = reverse_lazy('subject-list')
 
 class TeacherListView(ListView):
@@ -64,7 +86,18 @@ class TeacherListView(ListView):
 class TeacherCreateView(CreateView):
     model = Teacher
     fields = '__all__'
-    template_name = 'tracker/teacher_form'
+    template_name = 'tracker/teacher_form.html'
+    success_url = reverse_lazy('teacher-list')
+
+class TeacherUpdateView(UpdateView):
+    model = Teacher
+    fields = '__all__'
+    template_name = 'tracker/teacher_form.html'
+    success_url = reverse_lazy('teacher-list')
+
+class TeacherDeleteView(DeleteView):
+    model = Teacher
+    template_name = 'tracker/teacher_confirm_delete.html'
     success_url = reverse_lazy('teacher-list')
 
 
@@ -74,7 +107,7 @@ class TeacherCreateView(CreateView):
 class MarkListView(ListView):
     model = Mark
     template_name = 'tracker/mark_list.html'
-    context_object_name = 'mark'
+    context_object_name = 'marks'
 
 
 class MarkCreateView(CreateView):

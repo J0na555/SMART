@@ -1,0 +1,74 @@
+{% extends 'tracker/base.html' %}
+
+{% block title %}Teachers - Student Tracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-chalkboard-teacher me-2"></i>Teachers
+                </h4>
+                <a href="{% url 'teacher-create' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>Add Teacher
+                </a>
+            </div>
+            <div class="card-body">
+                {% if teachers %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Subject</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for teacher in teachers %}
+                                <tr>
+                                    <td>{{ teacher.id }}</td>
+                                    <td>
+                                        <strong>{{ teacher.first_name }} {{ teacher.last_name }}</strong>
+                                    </td>
+                                    <td>
+                                        <a href="mailto:{{ teacher.email }}" class="text-decoration-none">
+                                            <i class="fas fa-envelope me-1"></i>{{ teacher.email }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">{{ teacher.subject.name }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'teacher-update' teacher.pk %}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'teacher-delete' teacher.pk %}" class="btn btn-sm btn-outline-danger" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-chalkboard-teacher fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No teachers found</h5>
+                        <p class="text-muted">Start by adding your first teacher.</p>
+                        <a href="{% url 'teacher-create' %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Add Teacher
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
