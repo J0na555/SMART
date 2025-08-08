@@ -10,6 +10,10 @@ This project is designed for school or university instructors to:
 - Record and manage student attendance.
 - Generate attendance and grade reports per student or subject.
 
+  ## 🌐 Live Demo
+🔗 [live demo](https://smart-ybec.onrender.com)
+
+
 ##  Features
 
 - ✅ CRUD operations for Students, Subjects, Assessments, Marks, and Attendance.
